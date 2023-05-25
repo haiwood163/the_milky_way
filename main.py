@@ -20,7 +20,7 @@ citys = os.environ["CITY"].split(',')
 solarys = os.environ["SOLARY"].split(',')
 start_dates = os.environ["START_DATE"].split(',')
 birthdays = os.environ["BIRTHDAY"].split(',')
-
+poetry_type = os.environ["POETRY"].split(',')
 
 # 获取天气和温度
 def get_weather(city):
@@ -29,6 +29,14 @@ def get_weather(city):
     weather = res['data']['list'][0]
     return weather['weather'], math.floor(weather['temp'])
 
+# 获取古诗词
+def get_poetry(poetry_type):
+    param = ""
+    for item in poetry_type:
+        param = param + "c=" + item + "&"
+    url = "https://v1.hitokoto.cn/?c=" + param
+    res = requests.get(url).json()
+    return res['from'],res['from_who'],res['hitokoto']
 
 # 当前城市、日期
 def get_city_date(city):
@@ -76,21 +84,25 @@ client = WeChatClient(app_id, app_secret)
 wm = WeChatMessage(client)
 
 for i in range(len(user_ids)):
-    wea, tem = get_weather(citys[i])
-    cit, dat = get_city_date(citys[i])
+#     wea, tem = get_weather(citys[i])
+#     cit, dat = get_city_date(citys[i])
+    title,author,content = get_poetry(poetry_type)
     data = {
-        "date": {"value": "今日日期：{}".format(dat), "color": get_random_color()},
-        "city": {"value": "当前城市：{}".format(cit), "color": get_random_color()},
-        "weather": {"value": "今日天气：{}".format(wea), "color": get_random_color()},
-        "temperature": {"value": "当前温度：{}".format(tem), "color": get_random_color()},
-        "love_days": {"value": "今天是你们在一起的第{}天".format(get_count(start_dates[i])), "color": get_random_color()},
-        "birthday_left": {"value": "距离她的生日还有{}天".format(get_birthday(birthdays[i])), "color": get_random_color()},
-        "solary": {"value": "距离发工资还有{}天".format(get_solary(solarys[i])), "color": get_random_color()},
-        "words": {"value": get_words(), "color": get_random_color()}
+#         "date": {"value": "今日日期：{}".format(dat), "color": get_random_color()},
+#         "city": {"value": "当前城市：{}".format(cit), "color": get_random_color()},
+#         "weather": {"value": "今日天气：{}".format(wea), "color": get_random_color()},
+#         "temperature": {"value": "当前温度：{}".format(tem), "color": get_random_color()},
+#         "love_days": {"value": "今天是你们在一起的第{}天".format(get_count(start_dates[i])), "color": get_random_color()},
+#         "birthday_left": {"value": "距离她的生日还有{}天".format(get_birthday(birthdays[i])), "color": get_random_color()},
+#         "solary": {"value": "距离发工资还有{}天".format(get_solary(solarys[i])), "color": get_random_color()},
+#         "words": {"value": get_words(), "color": get_random_color()}
+          "title": {"value": "{}".format(title)},
+          "author": {"value": "作者.{}".format(author)},
+          "content": {"value": "{}".format(content)},
     }
-    if get_birthday(birthdays[i]) == 0:
-        data["birthday_left"]['value'] = "今天是她的生日哦，快去一起甜蜜吧"
-    if get_solary(solarys[i]) == 0:
-        data["solary"]['value'] = "今天发工资啦，快去犒劳一下自己吧"
+#     if get_birthday(birthdays[i]) == 0:
+#         data["birthday_left"]['value'] = "今天是她的生日哦，快去一起甜蜜吧"
+#     if get_solary(solarys[i]) == 0:
+#         data["solary"]['value'] = "今天发工资啦，快去犒劳一下自己吧"
     res = wm.send_template(user_ids[i], template_ids[i], data)
     print(res)
