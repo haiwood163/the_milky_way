@@ -31,9 +31,9 @@ def get_poetry(poetry_type):
     param = ""
     for item in poetry_type:
         param = param + "c=" + item + "&"
-    url = "https://v1.hitokoto.cn/?c=" + param
+    url = "https://v1.hitokoto.cn/?" + param
     res = requests.get(url).json()
-    return res
+    return res['from'],res['from_who'],res['hitokoto']
 
 
 
@@ -46,11 +46,11 @@ client = WeChatClient(app_id, app_secret)
 wm = WeChatMessage(client)
 
 for i in range(len(user_ids)):
-    resData = get_poetry(poetry_type)
+    title,author,content = get_poetry(poetry_type)
     data = {
-          "title": {"value": "{}".format(resData)},
-          "author": {"value": "作者.{}".format(resData)},
-          "content": {"value": "{}".format(resData)}
+          "title": {"value": "{}".format(title)},
+          "author": {"value": "作者.{}".format(author)},
+          "content": {"value": "{}".format(content)}
     }
     res = wm.send_template(user_ids[i], template_ids[i], data)
     print(res)
