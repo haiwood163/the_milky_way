@@ -48,7 +48,7 @@ wm = WeChatMessage(client)
 for i in range(len(user_ids)):
     resData = get_poetry(poetry_type)
     data = {
-          "title": {"value": "{}".format(resData['from'])},
+          "title": {"value": "{}".format(resData['from_who'])},
           "author": {"value": "作者.{}".format(resData['from_who'])},
           "content": {"value": "{}".format(resData['hitokoto'])}
     }
